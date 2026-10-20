@@ -1,1 +1,729 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#5ba4cf">
+  <title>QiTnGa_Studio｜靑天Studio</title>
 
+  <style>
+    /* ========== 全局颜色变量（白天） ========== */
+    :root {
+      --light: #ffffff;
+      --muted: #e0f0ff;
+      --line: rgba(255, 255, 255, .4);
+      --card-bg: rgba(18, 52, 86, 0.45); 
+      --card-border: rgba(255, 255, 255, 0.3);
+      --card-hover-bg: rgba(18, 52, 86, 0.55);
+      --nav-bg: rgba(10, 40, 70, 0.5);
+    }
+
+    /* ========== 夜间模式变量 ========== */
+    [data-theme="dark"] {
+      --light: #e6f1ff; 
+      --muted: #a3b8cc;
+      --line: rgba(255, 255, 255, .15);
+      --card-bg: rgba(12, 25, 40, 0.7); 
+      --card-border: rgba(255, 255, 255, 0.1);
+      --card-hover-bg: rgba(20, 40, 60, 0.85);
+      --nav-bg: rgba(5, 15, 25, 0.8);
+    }
+
+    * {
+      box-sizing: border-box;
+      scroll-behavior: smooth;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+    }
+
+    /* ========== 主站背景 ========== */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--light);
+      background: linear-gradient(135deg, #a0d8ef 0%, #5ba4cf 40%, #1e5799 100%);
+      background-attachment: fixed;
+      font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+      line-height: 1.7;
+      transition: background 0.6s ease, color 0.4s ease;
+    }
+
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #0a192f 0%, #0d2b45 50%, #03101e 100%);
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(1040px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    /* ========== 导航栏 ========== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      padding: 13px 0;
+      background: var(--nav-bg);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.3s ease;
+    }
+
+    /* 夜间模式下的发光特效（由 JS 动态添加类名触发） */
+    [data-theme="dark"] .glow-hit {
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.8), inset 0 0 10px rgba(255, 255, 255, 0.5) !important;
+      border-color: rgba(255, 255, 255, 0.9) !important;
+      color: #fff !important;
+      text-shadow: 0 0 10px #fff, 0 0 20px #fff !important;
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      color: var(--light);
+      font-size: 18px;
+      font-weight: 750;
+      white-space: nowrap;
+      /* 白天：去掉发光特效 */
+      text-shadow: none;
+      transition: text-shadow 0.3s ease;
+    }
+
+    /* 夜间：默认带一点微光，点击时全亮 */
+    [data-theme="dark"] .logo {
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a { 
+      transition: color .2s ease, text-shadow .3s ease; 
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+    
+    /* 白天：文字不变色，无发光 */
+    .nav-links a:hover { color: var(--light); }
+
+    .theme-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--line);
+      color: var(--light);
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0; 
+    }
+    
+    .theme-btn:hover {
+      background: var(--card-hover-bg);
+    }
+
+    /* ========== 首页头图 ========== */
+    .hero {
+      min-height: 470px;
+      display: grid;
+      grid-template-columns: 1.5fr .8fr;
+      align-items: center;
+      gap: 40px;
+      padding: 68px 0;
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      letter-spacing: .12em;
+      font-size: 13px;
+      transition: text-shadow 0.3s ease;
+    }
+
+    h1 {
+      margin: 12px 0;
+      font-size: clamp(38px, 7vw, 68px);
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    h1 span {
+      color: var(--light);
+      text-shadow: none; /* 白天移除大标题发光 */
+      transition: text-shadow 0.3s ease;
+    }
+
+    .hero p {
+      max-width: 620px;
+      margin: 9px 0;
+      color: var(--muted);
+      font-size: 17px;
+      transition: text-shadow 0.3s ease;
+    }
+
+    .hero .subtitle {
+      color: var(--light);
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 18px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .1);
+      transition: .25s ease;
+    }
+
+    .button:hover {
+      border-color: var(--light);
+      background: rgba(255, 255, 255, .2);
+      transform: translateY(-2px);
+    }
+
+    .button.primary {
+      color: #1e5799;
+      background: #ffffff;
+      border-color: #ffffff;
+      font-weight: 700;
+    }
+    
+    [data-theme="dark"] .button.primary {
+      color: #0d2b45;
+      background: #e0f0ff;
+      border-color: #e0f0ff;
+    }
+
+    /* ========== 悬浮行星余晖图 ========== */
+    .avatar-container {
+      width: min(320px, 80vw);
+      aspect-ratio: 16 / 9;
+      justify-self: center;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background-color: #140822;
+      animation: float 3s ease-in-out infinite;
+      /* 白天：移除阴影和光晕，只保留极简的黑色投影 */
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); 
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .avatar-container:hover {
+      transform: scale(1.05) translateY(-5px);
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); }
+      50% { transform: translateY(-15px); box-shadow: 0 20px 30px rgba(0, 0, 0, 0.1); }
+      100% { transform: translateY(0px); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); }
+    }
+
+    /* 夜间模式下，图片默认带一点微弱的发光 */
+    [data-theme="dark"] .avatar-container {
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      animation: float-dark 3s ease-in-out infinite;
+    }
+    @keyframes float-dark {
+      0% { transform: translateY(0px); box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); }
+      50% { transform: translateY(-15px); box-shadow: 0 0 25px rgba(255, 255, 255, 0.2); }
+      100% { transform: translateY(0px); box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); }
+    }
+
+
+    /* ========== 通用区块 ========== */
+    section { padding: 34px 0 48px; scroll-margin-top: 78px; }
+    .section-title { margin-bottom: 21px; }
+    
+    .section-title h2 { 
+      margin: 0; 
+      font-size: 29px; 
+      text-shadow: none; /* 白天移除 */
+      transition: text-shadow 0.3s ease;
+    }
+    
+    .section-title p { margin: 5px 0 0; color: var(--muted); font-size: 14px; transition: text-shadow 0.3s ease;}
+
+    /* ========== 通用卡片 ========== */
+    .card {
+      position: relative;
+      overflow: hidden;
+      padding: 22px;
+      border: 1px solid var(--card-border);
+      border-radius: 17px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      /* 白天：移除光晕，只留纯阴影 */
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .08), 0 12px 24px rgba(0, 0, 0, .08);
+      transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease, background .3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--light);
+      background: var(--card-hover-bg);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .12), 0 16px 30px rgba(0, 0, 0, .1);
+    }
+
+    .about p { margin: 0 0 14px; color: var(--light); }
+    .about p:last-child { margin-bottom: 0; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 17px; }
+    .tag {
+      padding: 5px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--light);
+      background: rgba(255, 255, 255, .1);
+      font-size: 13px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .skills { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .skill-icon { font-size: 27px; }
+    .skill h3 { margin: 8px 0; color: var(--light); transition: text-shadow 0.3s ease; }
+    .skill p { margin: 0; color: var(--muted); font-size: 14px; }
+
+    /* ========== 折腾史时间线 ========== */
+    .timeline { position: relative; display: grid; gap: 18px; padding: 8px 0 8px 35px; overflow: visible; }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 11px; top: 10px; bottom: 10px; width: 2px;
+      background: linear-gradient(to bottom, transparent, var(--line) 10%, var(--line) 80%, transparent);
+      transition: background 0.4s ease, box-shadow 0.3s ease;
+    }
+
+    /* 夜间时间线光晕 */
+    [data-theme="dark"] .timeline::before {
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+    }
+
+    .event {
+      position: relative;
+      padding: 18px 21px;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .1);
+      transition: border-color .3s ease, box-shadow .3s ease, transform .3s ease, background .3s ease;
+    }
+
+    .event::before {
+      content: "";
+      position: absolute;
+      left: -31px; top: 27px;
+      width: 10px; height: 10px;
+      border: 2px solid var(--light);
+      border-radius: 50%;
+      background: var(--light);
+      transition: border-color 0.4s ease, background 0.4s ease, box-shadow 0.3s ease;
+    }
+
+    /* 夜间时间线节点发光 */
+    [data-theme="dark"] .event::before {
+      box-shadow: 0 0 10px var(--light);
+    }
+
+    .event:hover {
+      transform: translateX(4px);
+      border-color: var(--light);
+      background: var(--card-hover-bg);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, .15);
+    }
+
+    .event .year {
+      display: inline-block;
+      margin-bottom: 7px;
+      padding: 2px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--light);
+      background: rgba(255, 255, 255, .1);
+      font-size: 12px;
+      transition: box-shadow 0.3s ease;
+    }
+
+    .event h3 { margin: 0 0 5px; color: var(--light); font-size: 16px; transition: text-shadow 0.3s ease; }
+    .event p { margin: 0; color: var(--muted); font-size: 13px; transition: text-shadow 0.3s ease; }
+
+    .journey-end { margin-top: 27px; text-align: center; }
+    
+    .journey-end h3 { 
+      margin-bottom: 4px; 
+      color: var(--light); 
+      font-size: 22px; 
+      text-shadow: none; /* 白天移除发光 */
+      transition: text-shadow 0.3s ease;
+    }
+    
+    .journey-end p { margin-top: 0; color: var(--muted); font-size: 14px; transition: text-shadow 0.3s ease; }
+
+    /* ========== 友情链接 ========== */
+    .friends { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .friend { display: block; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease, background .3s ease; }
+    .friend:hover { transform: translateY(-4px); border-color: var(--light); }
+    .friend strong { display: block; color: var(--light); font-size: 18px; transition: text-shadow 0.3s ease; }
+    .friend span { display: block; margin-top: 4px; color: var(--muted); font-size: 14px; transition: text-shadow 0.3s ease; }
+
+    .email-link { color: var(--light); font-weight: bold; overflow-wrap: anywhere; transition: text-shadow 0.3s ease; }
+    
+    footer { 
+      padding: 24px 0; 
+      border-top: 1px solid var(--line); 
+      color: var(--muted); 
+      text-align: center; 
+      font-size: 13px; 
+      transition: border-color 0.4s ease, text-shadow 0.3s ease; 
+    }
+
+    /* ========== 滚动浮现动画 ========== */
+    .js-enabled .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2, .7, .2, 1); }
+    .js-enabled .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ========== 手机适配优化 ========== */
+    @media (max-width: 700px) {
+      .hero { min-height: 0; grid-template-columns: 1fr; text-align: center; padding: 52px 0; }
+      .hero .buttons { justify-content: center; }
+      .avatar-container { grid-row: 1; width: 100%; max-width: 320px; margin-bottom: 20px; }
+      .nav-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .nav-right { width: 100%; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; }
+      .nav-links { gap: 10px; font-size: 13px; flex: 1; }
+    }
+
+    @media (max-width: 600px) {
+      .skills, .friends { grid-template-columns: 1fr; }
+      .timeline { padding-left: 29px; }
+      .timeline::before { left: 8px; }
+      .event::before { left: -27px; }
+      .event { padding: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+      .js-enabled .reveal { opacity: 1; transform: none; }
+    }
+
+    /* ========== 进入前提示遮罩 ========== */
+    html.gate-lock, body.gate-lock { overflow: hidden !important; height: 100% !important; touch-action: none !important; }
+    #ageGate {
+      position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+      width: 100% !important; height: 100% !important; height: 100vh !important; height: 100dvh !important;
+      z-index: 2147483647 !important; margin: 0 !important; padding: 20px !important;
+      background: #000 !important; display: flex !important; align-items: center !important; justify-content: center !important;
+      transition: opacity 0.45s ease, visibility 0.45s ease !important;
+    }
+    #ageGate .gate-box {
+      width: 100%; max-width: 400px; padding: 35px 25px; border: 1px solid rgba(168, 233, 255, 0.5); border-radius: 18px;
+      text-align: center; background: linear-gradient(150deg, #a8e9ff 0%, #2f7fb5 45%, #071a35 100%);
+      box-shadow: 0 0 20px rgba(168, 233, 255, 0.25), 0 20px 50px rgba(0, 0, 0, 0.8);
+      transform: scale(1); transition: transform 0.35s ease, opacity 0.35s ease;
+    }
+    #ageGate .gate-title { margin: 0 0 25px 0; color: #ffffff; font-size: 18px; font-weight: bold; line-height: 1.5; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
+    #ageGate .gate-btn {
+      display: inline-block; min-width: 140px; padding: 12px 30px; border: 1px solid #ffffff; border-radius: 999px;
+      color: #071a35; background: #eafaff; font-size: 16px; font-weight: bold; font-family: inherit; cursor: pointer;
+      outline: none; transition: all 0.25s ease;
+    }
+    #ageGate .gate-btn.is-red { background: #e03131 !important; border-color: #ff6b6b !important; color: #ffffff !important; box-shadow: 0 0 20px rgba(224, 49, 49, 0.6) !important; }
+    #ageGate.is-closing { opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+    #ageGate.is-closing .gate-box { transform: scale(0.95); opacity: 0; }
+  </style>
+</head>
+
+<body class="gate-lock">
+  <!-- 进入前提示遮罩 -->
+  <div id="ageGate" role="dialog" aria-modal="true">
+    <div class="gate-box">
+      <p class="gate-title">此内容含有 🔞 内容，是否继续浏览？</p>
+      <button class="gate-btn" id="ageGateBtn" type="button">确定</button>
+    </div>
+  </div>
+
+  <nav>
+    <div class="container nav-inner">
+      <a class="logo" href="#">QiTnGa_Studio</a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="#about">关于我</a>
+          <a href="#hobbies">喜好</a>
+          <a href="#skills">技能</a>
+          <a href="#journey">折腾史</a>
+          <a href="#friends">友情链接</a>
+          <a href="#contact">联系我</a>
+        </div>
+        <button class="theme-btn" id="themeToggle" type="button" aria-label="切换模式">🌙</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <header class="hero">
+      <div>
+        <div class="eyebrow">欢迎来到我的个人主页</div>
+        <h1><span>QiTnGa_Studio</span></h1>
+        <p class="subtitle">靑天studio · QiTnGa_Studio</p>
+        <p>一位资深的「天文」爱好者</p>
+        <div class="buttons">
+          <a class="button primary" href="#about">认识我 →</a>
+          <a class="button" href="#journey">看看我的折腾史</a>
+        </div>
+      </div>
+
+      <!-- ★ 悬浮行星余晖图 ★ -->
+      <div class="avatar-container" aria-label="星空风景图">
+        <img class="avatar-img" src="./planet.jpg" alt="行星与余晖" onerror="this.style.display='none'">
+      </div>
+    </header>
+
+    <section id="about">
+      <div class="section-title reveal">
+        <h2>关于我</h2>
+        <p>你好，这里是靑天studio。</p>
+      </div>
+      <div class="card about reveal">
+        <p>喜欢折腾刷机、开源 AI，也喜欢研究化学。闲暇时，我会去观星，拍下美丽的瞬间。</p>
+        <p>目前主要活动平台是 B 站。</p>
+        <p>除了刷机和研究化学，我还是个 00 后，喜欢听欧美音乐，不过国风 DJ 我也喜欢。希望同样喜欢折腾的你，能和我一起分享、合作！</p>
+      </div>
+    </section>
+
+    <section id="hobbies">
+      <div class="section-title reveal">
+        <h2>最大的喜好</h2>
+        <p>喜欢折腾，也喜欢探索</p>
+      </div>
+      <div class="card reveal">
+        <div class="tags">
+          <span class="tag">刷机</span>
+          <span class="tag">电脑系统重装</span>
+          <span class="tag">折腾开源 AI</span>
+          <span class="tag">观星</span>
+          <span class="tag">研究化学原理</span>
+          <span class="tag">制作 WTG</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <div class="section-title reveal">
+        <h2>我的技能</h2>
+        <p>喜欢动手尝试，也喜欢探索新工具</p>
+      </div>
+      <div class="skills">
+        <article class="card skill reveal">
+          <div class="skill-icon">📱</div>
+          <h3>刷机</h3>
+          <p>解锁 BL，在山寨学习机上安装第三方应用，并进行 ADB 调试。</p>
+        </article>
+        <article class="card skill reveal">
+          <div class="skill-icon">🤖</div>
+          <h3>折腾 AI</h3>
+          <p>云端部署 Gemma 4 31B，并使用云端 GPU 部署 MiniMax H3 模型生成视频。</p>
+        </article>
+        <article class="card skill reveal">
+          <div class="skill-icon">💻</div>
+          <h3>电脑系统折腾</h3>
+          <p>在 VMware 上安装不同版本的 Windows 11 进行体验，制作 Windows 11 的 WTG U 盘，安装体验 Linux 系统，也会在 VMware 上安装 macOS 26 黑苹果。</p>
+        </article>
+        <article class="card skill reveal">
+          <div class="skill-icon">🔎</div>
+          <h3>探索开源</h3>
+          <p>经常在 GitHub 上浏览一些口碑比较好的软件和工具，发现有意思的开源项目。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="journey">
+      <div class="section-title reveal">
+        <h2>折腾史</h2>
+        <p>我与数码、化学、天文及电脑系统</p>
+      </div>
+      <div class="timeline">
+        <article class="event reveal"><span class="year">2014 年下半年</span><h3>初识天文学</h3><p>开始接触天文学。</p></article>
+        <article class="event reveal"><span class="year">2017 年</span><h3>热爱天文学的高峰</h3><p>经常观看天文纪录片，对宇宙充满好奇。</p></article>
+        <article class="event reveal"><span class="year">2021 年</span><h3>第一次接触刷机</h3><p>开始探索手机系统与刷机。</p></article>
+        <article class="event reveal"><span class="year">2023 年下半年</span><h3>开始接触化学</h3><p>逐渐对化学产生兴趣。</p></article>
+        <article class="event reveal"><span class="year">2024 年上半年</span><h3>化学成绩优异</h3><p>在学习化学的过程中取得了不错的成绩。</p></article>
+        <article class="event reveal"><span class="year">2025 年 5 月</span><h3>破解山寨学习机</h3><p>成功破解设备，并安装第三方 APP。</p></article>
+        <article class="event reveal"><span class="year">2025 年 10 月</span><h3>第一次重装系统</h3><p>开始尝试给电脑重装系统。</p></article>
+        <article class="event reveal"><span class="year">2025 年 12 月上旬</span><h3>第一次尝试 WTG</h3><p>第一次折腾 WTG，结果失败。</p></article>
+        <article class="event reveal"><span class="year">2025 年 12 月下旬</span><h3>再次挑战 WTG</h3><p>再次折腾 WTG 系统，惨败告终。</p></article>
+        <article class="event reveal"><span class="year">2026 年 1 月</span><h3>开始使用 RAMOS</h3><p>开始使用别人定制的 RAMOS 系统。</p></article>
+        <article class="event reveal"><span class="year">2026 年 6 月</span><h3>WTG 取得重大胜利</h3><p>再次挑战 WTG，终于取得重大胜利。</p></article>
+        <article class="event reveal"><span class="year">2026 年 9 月</span><h3>云端部署 AI 模型</h3><p>成功在云端部署 Gemma 4 和 MiniMax H3。</p></article>
+      </div>
+      <div class="journey-end reveal">
+        <h3>探索的路并没有停止</h3>
+        <p>路途虽远，但探索永无止境。</p>
+      </div>
+    </section>
+
+    <section id="friends">
+      <div class="section-title reveal">
+        <h2>友情链接</h2>
+        <p>本人探索得到的站点</p>
+      </div>
+      <div class="friends">
+        <a class="card friend reveal" href="https://duck.ai/" target="_blank" rel="noopener noreferrer">
+          <strong>duck.ai</strong><span><b>小鸭子 AI 主导</b></span>
+        </a>
+        <a class="card friend reveal" href="https://www.deepseek.com/" target="_blank" rel="noopener noreferrer">
+          <strong>DeepSeek.com</strong><span><b>大蓝鱼 AI 辅助</b></span>
+        </a>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="section-title reveal">
+        <h2>联系我</h2>
+        <p>欢迎交流或分享想法</p>
+      </div>
+      <div class="card reveal">
+        邮箱：
+        <a class="email-link" href="mailto:QiTnGa.Sky@gmail.com">QiTnGa.Sky@gmail.com</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 由靑天工作室编写，小鸭子 AI 为主，大蓝鱼 AI 为辅共同搭建 😏
+  </footer>
+
+  <script>
+    // 页面浮现动画
+    document.documentElement.classList.add("js-enabled");
+    const revealItems = document.querySelectorAll(".reveal");
+    const observer = new IntersectionObserver((entries, currentObserver) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          currentObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealItems.forEach((item, index) => {
+      item.style.transitionDelay = `${(index % 4) * 80}ms`;
+      observer.observe(item);
+    });
+
+    // 夜间模式切换逻辑
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const htmlElement = document.documentElement;
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      htmlElement.setAttribute('data-theme', 'dark');
+      themeToggleBtn.textContent = '☀️';
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      if (htmlElement.getAttribute('data-theme') === 'dark') {
+        htmlElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        themeToggleBtn.textContent = '🌙';
+      } else {
+        htmlElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        themeToggleBtn.textContent = '☀️';
+      }
+    });
+
+    // ==========================================
+    // 核心新特性：夜间模式下，手指/鼠标点击发光！
+    // ==========================================
+    document.body.addEventListener('pointerdown', function(e) {
+      // 只有在夜间模式才生效
+      if (htmlElement.getAttribute('data-theme') !== 'dark') return;
+
+      // 寻找被点击的元素（或者它最近的方框/卡片）
+      const target = e.target.closest('.card, .event, .friend, .tag, .year, .nav-links a, .avatar-container, h1, h2, h3, p, .email-link, .button');
+      
+      if (target) {
+        // 添加发光类
+        target.classList.add('glow-hit');
+        
+        // 0.4秒后自动移除发光，恢复原状
+        setTimeout(() => {
+          target.classList.remove('glow-hit');
+        }, 400);
+      }
+    });
+
+    // 进入前提示遮罩逻辑
+    (function () {
+      const gate = document.getElementById('ageGate');
+      const btn = document.getElementById('ageGateBtn');
+      if (!gate || !btn) return;
+
+      document.documentElement.classList.add('gate-lock');
+      document.body.classList.add('gate-lock');
+
+      btn.addEventListener('click', function () {
+        btn.classList.add('is-red');
+        btn.disabled = true;
+
+        setTimeout(function () {
+          gate.classList.add('is-closing');
+          document.documentElement.classList.remove('gate-lock');
+          document.body.classList.remove('gate-lock');
+
+          gate.addEventListener('transitionend', function () {
+            gate.remove();
+          }, { once: true });
+
+          setTimeout(function () {
+            if (gate.parentNode) gate.remove();
+          }, 600);
+        }, 350);
+      });
+    })();
+  </script>
+</body>
+</html>
